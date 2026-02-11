@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delicious Delights</title>
+
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background: #fff0f5; color:#333; }
+
+    /* HEADER BACKGROUND IMAGE */
+    header {
+      background-image: url("Background_n.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    header * { position: relative; }
+
+    header h1 { font-size:3em; margin-bottom:10px; }
+    header p { font-size:1.2em; margin-top: 0; }
+
+    /* LOGO */
+    .logo {
+      width: 180px;
+      height: auto;
+      display: block;
+      margin: 0 auto 25px auto;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 20px;
+    }
+
+    .section { padding:50px 20px; max-width:1000px; margin:auto; display:block; }
+    h2 { font-size:2em; margin-bottom:20px; text-align:center; }
+
+    .cards, .product-grid {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:20px;
+    }
+
+    .card, .product-card {
+      background:#fff;
+      border-radius:15px;
+      padding:20px;
+      width:250px;
+      box-shadow:0 4px 6px rgba(0,0,0,0.1);
+      text-align:center;
+      transition: transform 0.3s;
+    }
+
+    .card:hover, .product-card:hover { transform: translateY(-5px); }
+
+    .product-card img {
+      width:100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius:10px;
+    }
+
+    footer { background: #ff99cc; text-align:center; padding:20px; margin-top:50px; }
+
+    button {
+      background: #ff66aa;
+      color:white;
+      border:none;
+      padding:10px 20px;
+      border-radius:10px;
+      cursor:pointer;
+      transition: background 0.3s;
+      margin-top:10px;
+    }
+
+    button:hover { background: #ff3388; }
+
+    /* Dropdown styling */
+    select {
+      margin-top: 8px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      width: 100%;
+      max-width: 220px;
+    }
+
+    /* CART STYLES */
+    .cart {
+      position: fixed;
+      right: -360px;
+      top: 0;
+      width: 320px;
+      height: 100%;
+      background: white;
+      box-shadow: -3px 0 12px rgba(0,0,0,0.25);
+      padding: 16px;
+      transition: right 0.25s ease;
+      z-index: 2000;
+      overflow-y: auto;
+    }
+
+    .cart.active { right: 0; }
+
+    .cart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .close-cart {
+      background: transparent;
+      color: #333;
+      border: 1px solid #ddd;
+      padding: 6px 10px;
+      border-radius: 10px;
+      margin-top: 0;
+    }
+
+    .cart-items { list-style: none; padding-left: 0; }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .cart-item small { color: #777; }
+
+    .cart-item button {
+      padding: 6px 10px;
+      margin-top: 0;
+      margin-left: 6px;
+    }
+
+    .cart-footer { margin-top: 12px; }
+    .cart-total { font-weight: bold; }
+
+    .cart-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 2100;
+      padding: 10px 14px;
+      font-size: 16px;
+    }
+
+    button.secondary {
+      background: white;
+      color: #ff3388;
+      border: 2px solid #ff3388;
+    }
+
+    button.secondary:hover { background: #ffe6f0; }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <h1>Delicious Delights</h1>
+    <p>Freshly baked happiness made daily!</p>
+    <button onclick="orderNow()">Order Now</button>
+  </header>
+
+  <!-- Floating Cart Button -->
+  <button class="cart-toggle" onclick="toggleCart()">🛒 Cart (<span id="cart-count">0</span>)</button>
+
+  <!-- Favorites Section -->
+  <section id="favorites" class="section">
+    <img src="DelightLogo_n.jpg" alt="Delicious Delights Logo" class="logo">
+    <h2>Our Selection</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Catering Order</h3>
+        <button onclick="showSection('cakes')">View More</button>
+      </div>
+      <div class="card">
+        <h3>Artisan Muffins</h3>
+        <button onclick="showSection('cupcakes')">View More</button>
+      </div>
+      <div class="card">
+        <h3>Fresh Cookies</h3>
+        <button onclick="showSection('pastries')">View More</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Catering Section -->
+  <section id="cakes" class="section" style="display:none; background:#ffe6f0;">
+    <h2>Catering</h2>
+    <div class="product-grid">
+      <div class="product-card">
+        <img src="Cookies.png" alt="Small Event Tray">
+        <h3>Small Event Tray</h3>
+        <button onclick="addToCart('Small Event Tray', 30)">Add to Cart</button>
+      </div>
+
+      <div class="product-card">
+        <img src="Cookies.png" alt="Medium Event Tray">
+        <h3>Medium Event Tray</h3>
+        <button onclick="addToCart('Medium Event Tray', 55)">Add to Cart</button>
+      </div>
+
+      <div class="product-card">
+        <img src="Cookies.png" alt="Large Event Tray">
+        <h3>Large Event Tray</h3>
+        <button onclick="addToCart('Large Event Tray', 80)">Add to Cart</button>
+      </div>
+    </div>
+    <button onclick="goBack()">Back</button>
+  </section>
+
+  <!-- Muffins Section -->
+  <section id="cupcakes" class="section" style="display:none; background:#fff0f5;">
+    <h2>Artisan Muffins</h2>
+    <div class="product-grid">
+
+      <div class="product-card">
+        <img src="CrunchM.png" alt="Blueberry Crunch Muffins">
+        <h3>Blueberry Crunch Muffins</h3>
+
+        <label for="pack-blueberry"><strong>Pack Size</strong></label><br>
+        <select id="pack-blueberry">
+          <option value="5" data-price="18.00">5-pack — $18.00</option>
+          <option value="10" data-price="34.00">10-pack — $34.00</option>
+          <option value="15" data-price="48.00">15-pack — $48.00</option>
+        </select>
+        <br>
+
+        <button onclick="addMuffinPackToCart('Blueberry Crunch Muffins','pack-blueberry')">Add to Cart</button>
+      </div>
+
+      <div class="product-card">
+        <img src="ChocolateM-n.jpg" alt="Rich Chocolate Muffins">
+        <h3>Rich Chocolate Muffins</h3>
+
+        <label for="pack-chocolate"><strong>Pack Size</strong></label><br>
+        <select id="pack-chocolate">
+          <option value="5" data-price="18.00">5-pack — $18.00</option>
+          <option value="10" data-price="34.00">10-pack — $34.00</option>
+          <option value="15" data-price="48.00">15-pack — $48.00</option>
+        </select>
+        <br>
+
+        <button onclick="addMuffinPackToCart('Rich Chocolate Muffins','pack-chocolate')">Add to Cart</button>
+      </div>
+
+      <div class="product-card">
+        <img src="PumpM.png" alt="Pumpkin Cream Cheese Muffins">
+        <h3>Pumpkin Cream Cheese Muffins</h3>
+
+        <label for="pack-pumpkin"><strong>Pack Size</strong></label><br>
+        <select id="pack-pumpkin">
+          <option value="5" data-price="19.00">5-pack — $19.00</option>
+          <option value="10" data-price="36.00">10-pack — $36.00</option>
+          <option value="15" data-price="51.00">15-pack — $51.00</option>
+        </select>
+        <br>
+
+        <button onclick="addMuffinPackToCart('Pumpkin Cream Cheese Muffins','pack-pumpkin')">Add to Cart</button>
+      </div>
+
+    </div>
+    <button onclick="goBack()">Back</button>
+  </section>
+
+  <!-- Cookies Section -->
+  <section id="pastries" class="section" style="display:none; background:#ffe6f0;">
+    <h2>Fresh Cookies</h2>
+    <div class="product-grid">
+      <div class="product-card">
+        <img src="images/chocolate-croissant.jpg" alt="Chocolate Croissant">
+        <h3>Chocolate Croissant</h3>
+        <button onclick="addToCart('Chocolate Croissant', 4.25)">Add to Cart</button>
+      </div>
+
+      <div class="product-card">
+        <img src="images/almond-danish.jpg" alt="Almond Danish">
+        <h3>Almond Danish</h3>
+        <button onclick="addToCart('Almond Danish', 4.25)">Add to Cart</button>
+      </div>
+
+      <div class="product-card">
+        <img src="images/cinnamon-roll.jpg" alt="Cinnamon Roll">
+        <h3>Cinnamon Roll</h3>
+        <button onclick="addToCart('Cinnamon Roll', 4.00)">Add to Cart</button>
+      </div>
+    </div>
+    <button onclick="goBack()">Back</button>
+  </section>
+
+  <!-- About Section -->
+  <section class="section">
+    <h2>About Us</h2>
+    <p style="text-align:center;">
+      Delicious Delights started with a simple passion: bringing joy through baking. Every treat is made with love and the finest ingredients. Come taste the happiness!
+    </p>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="section">
+    <h2>Contact</h2>
+    <p style="text-align:center;">123 Sweet Street, Your City, ST 12345</p>
+    <p style="text-align:center;">Phone: (123) 456-7890</p>
+    <p style="text-align:center;">Hours: Mon–Fri 8AM–6PM | Sat-Sun Closed</p>
+  </section>
+
+  <footer>
+    © 2026 Delicious Delights. All rights reserved.
+  </footer>
+
+  <!-- Overlay -->
+  <div id="cart-overlay" style="
+    position:fixed; inset:0; background:rgba(0,0,0,0.35);
+    opacity:0; pointer-events:none; transition:opacity .25s ease;
+    z-index:1999;"></div>
+
+  <!-- Cart Panel -->
+  <div id="cart" class="cart">
+    <div class="cart-header">
+      <h2>Your Cart</h2>
+      <button class="close-cart" onclick="toggleCart()">✕</button>
+    </div>
+
+    <ul id="cart-items" class="cart-items"></ul>
+
+    <div class="cart-footer">
+      <p class="cart-total">Total: $<span id="cart-total">0.00</span></p>
+      <button onclick="checkout()">Checkout</button>
+      <button class="secondary" onclick="clearCart()">Clear Cart</button>
+    </div>
+  </div>
+
+  <script>
+    function showSection(sectionId) {
+      document.getElementById('favorites').style.display = 'none';
+      const sections = ['cakes','cupcakes','pastries'];
+      sections.forEach(id => { document.getElementById(id).style.display = 'none'; });
+      document.getElementById(sectionId).style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goBack() {
+      const sections = ['cakes','cupcakes','pastries'];
+      sections.forEach(id => { document.getElementById(id).style.display = 'none'; });
+      document.getElementById('favorites').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    let cart = [];
+
+const STRIPE_LINKS = {
+  "Blueberry Crunch Muffins (5-pack)": "https://buy.stripe.com/test_8x2dR1dNE1ivebNdmy6Vq00"
+};
+
+
+
+
+    function saveCart() {
+      localStorage.setItem("dd_cart", JSON.stringify(cart));
+    }
+
+    function toggleCart() {
+      const cartEl = document.getElementById("cart");
+      const overlay = document.getElementById("cart-overlay");
+
+      const isOpen = cartEl.classList.toggle("active");
+      overlay.style.opacity = isOpen ? "1" : "0";
+      overlay.style.pointerEvents = isOpen ? "auto" : "none";
+    }
+
+    function orderNow() {
+      if (cart.length > 0) {
+        document.getElementById("cart").classList.add("active");
+        document.getElementById("cart-overlay").style.opacity = "1";
+        document.getElementById("cart-overlay").style.pointerEvents = "auto";
+        return;
+      }
+      document.getElementById("favorites").scrollIntoView({ behavior: "smooth" });
+    }
+
+    document.addEventListener("click", (e) => {
+      if (e.target && e.target.id === "cart-overlay") {
+        toggleCart();
+      }
+    });
+
+    function addToCart(name, price) {
+      const existing = cart.find(i => i.name === name);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ name, price, qty: 1 });
+      }
+
+      saveCart();
+      renderCart();
+
+      document.getElementById('cart').classList.add('active');
+      document.getElementById("cart-overlay").style.opacity = "1";
+      document.getElementById("cart-overlay").style.pointerEvents = "auto";
+    }
+
+    /* MUFFIN PACK FUNCTION */
+    function addMuffinPackToCart(itemName, selectId) {
+      const select = document.getElementById(selectId);
+      const selectedOption = select.options[select.selectedIndex];
+
+      const packSize = selectedOption.value;
+      const price = parseFloat(selectedOption.dataset.price);
+
+      const displayName = `${itemName} (${packSize}-pack)`;
+      addToCart(displayName, price);
+    }
+
+    function clearCart() {
+      cart = [];
+      saveCart();
+      renderCart();
+    }
+
+    function renderCart() {
+      const list = document.getElementById("cart-items");
+      const totalEl = document.getElementById("cart-total");
+      const countEl = document.getElementById("cart-count");
+
+      list.innerHTML = "";
+
+      let total = 0;
+      let count = 0;
+
+      cart.forEach((item, idx) => {
+        total += item.price * item.qty;
+        count += item.qty;
+
+        const li = document.createElement("li");
+        li.className = "cart-item";
+
+        li.innerHTML = `
+          <div>
+            <strong></strong><br>
+            <small class="price"></small><br>
+            <small class="qty"></small>
+          </div>
+          <div class="actions">
+            <button data-action="inc" data-idx="${idx}">+</button>
+            <button data-action="dec" data-idx="${idx}">-</button>
+            <button data-action="remove" data-idx="${idx}">Remove</button>
+          </div>
+        `;
+
+        li.querySelector("strong").textContent = item.name;
+        li.querySelector(".price").textContent = `$${item.price.toFixed(2)} each`;
+        li.querySelector(".qty").textContent = `Qty: ${item.qty}`;
+
+        list.appendChild(li);
+      });
+
+      list.onclick = (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+
+        const idx = Number(btn.dataset.idx);
+        const action = btn.dataset.action;
+        const item = cart[idx];
+        if (!item) return;
+
+        if (action === "inc") item.qty += 1;
+        if (action === "dec") item.qty -= 1;
+        if (action === "remove") item.qty = 0;
+
+        cart = cart.filter(i => i.qty > 0);
+
+        saveCart();
+        renderCart();
+      };
+
+      totalEl.textContent = total.toFixed(2);
+      countEl.textContent = count;
+    }
+
+    function checkout() {
+  if (cart.length === 0) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  if (cart.length > 1 || cart[0].qty > 1) {
+    alert("Checkout currently supports one pack at a time. Please checkout one pack per order.");
+    return;
+  }
+
+  const itemName = cart[0].name;
+  const link = STRIPE_LINKS[itemName];
+
+  if (!link) {
+    alert("No Stripe checkout link found for: " + itemName);
+    return;
+  }
+
+  window.location.href = link;
+}
+
+    
+
+    // Image fallback if file is missing
+    document.addEventListener("error", (e) => {
+      const el = e.target;
+      if (el.tagName === "IMG") {
+        el.src = "https://via.placeholder.com/600x400?text=Delicious+Delights";
+      }
+    }, true);
+
+    // Load cart on startup
+    renderCart();
+  </script>
+
+</body>
+</html>
